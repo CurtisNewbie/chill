@@ -1,4 +1,4 @@
-module github.com/curtisnewbie/chill/chillback
+module github.com/curtisnewbie/chill/chill
 
 go 1.21.5
 

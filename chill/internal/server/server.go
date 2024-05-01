@@ -3,7 +3,7 @@ package server
 import (
 	"os"
 
-	"github.com/curtisnewbie/chill/chillback/internal/schema"
+	"github.com/curtisnewbie/chill/chill/internal/schema"
 	"github.com/curtisnewbie/miso/miso"
 )
 
