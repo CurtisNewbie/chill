@@ -36,3 +36,5 @@ mysql:
 
 logging:
   level: "info"
+
+scripts.base-folder: "testdata/scripts"

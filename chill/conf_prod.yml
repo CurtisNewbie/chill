@@ -38,3 +38,6 @@ logging:
   level: "info"
   rolling:
     file: "logs/chill.log"
+
+
+scripts.base-folder: "/usr/data/scripts"

@@ -3,18 +3,22 @@ package build
 import (
 	"embed"
 	"path/filepath"
+
+	"github.com/curtisnewbie/miso/miso"
 )
 
 //go:embed scripts/*
 var buildScriptFs embed.FS
 
 const (
-	baseFolder = "scripts"
+	PropScriptsBaseFolder = "scripts.base-folder"
 )
 
-// Lookup build script under scripts/ folder.
-//
-// E.g., for `scripts/echo.sh`, path should be 'echo.sh'
+func init() {
+	miso.SetDefProp(PropScriptsBaseFolder, "./")
+}
+
+// Lookup build script under the specified folder.
 func LookupBuildScript(path string) ([]byte, error) {
-	return buildScriptFs.ReadFile(filepath.Join(baseFolder, path))
+	return buildScriptFs.ReadFile(filepath.Join(miso.GetPropStr(PropScriptsBaseFolder), path))
 }

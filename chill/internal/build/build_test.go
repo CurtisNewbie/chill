@@ -1,8 +1,13 @@
 package build
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/curtisnewbie/miso/miso"
+)
 
 func TestLookupBuildScript(t *testing.T) {
+	miso.SetProp(PropScriptsBaseFolder, "scripts")
 	f, err := LookupBuildScript("echo.sh")
 	if err != nil {
 		t.Fatal(err)
