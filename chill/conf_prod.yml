@@ -18,9 +18,9 @@ mysql:
   enabled: "true"
   database: "chill"
   port: "3306"
-  host: "${mysqladdr}"
-  user: "${mysqlusername}"
-  password: "${mysqlpassword}"
+  host: "${MYSQL_HOST}"
+  user: "${MYSQL_USERNAME}"
+  password: "${MYSQL_PASSWORD}"
 
 # consul:
 #   enabled: "false"
