@@ -6,10 +6,6 @@ server: # http server
   host: "0.0.0.0"
   port: "8080"
 
-consul:
-  enabled: "false"
-  consulAddress: "consul:8500"
-
 redis:
   enabled: "true"
   address: "localhost"
@@ -26,6 +22,10 @@ mysql:
   user: "${mysqlusername}"
   password: "${mysqlpassword}"
 
+# consul:
+#   enabled: "false"
+#   consulAddress: "consul:8500"
+
 # rabbitmq:
 #   enabled: "false"
 #   host: "localhost"
@@ -41,3 +41,8 @@ logging:
 
 
 scripts.base-folder: "/usr/data/scripts"
+
+auth:
+  basic:
+    username: "${CHILL_USERNAME}"
+    password: "${CHILL_PASSWORD}"

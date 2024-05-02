@@ -4,24 +4,14 @@ CREATE DATABASE IF NOT EXISTS chill;
 
 CREATE TABLE IF NOT EXISTS chill.command_log (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'primary key',
+    build_no VARCHAR(32) NOT NULL DEFAULT '' COMMENT 'build no',
     build_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'build name',
-    action_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'action name',
-    command VARCHAR(512) NOT NULL DEFAULT '' COMMENT 'command',
+    command TEXT COMMENT 'command',
     remark VARCHAR(1000) NOT NULL DEFAULT '' COMMENT 'remark',
     status VARCHAR(10) NOT NULL DEFAULT '' COMMENT 'status: SUCCESSFUL, FAILED',
     ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'created at',
-    KEY build_name_idx (build_name)
+    KEY build_no_idx (build_no)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COMMENT='Command Log';
-
-CREATE TABLE IF NOT EXISTS chill.action_log (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'primary key',
-    action_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'action name',
-    build_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'build name',
-    remark VARCHAR(1000) NOT NULL DEFAULT '' COMMENT 'remark',
-    status VARCHAR(10) NOT NULL DEFAULT '' COMMENT 'status: SUCCESSFUL, FAILED',
-    ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'created at',
-    KEY build_name_idx (build_name)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COMMENT='Action Log';
 
 CREATE TABLE IF NOT EXISTS chill.build_info (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'primary key',
@@ -34,10 +24,12 @@ CREATE TABLE IF NOT EXISTS chill.build_info (
 
 CREATE TABLE IF NOT EXISTS chill.build_log (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'primary key',
+    build_no VARCHAR(32) NOT NULL DEFAULT '' COMMENT 'build no',
     name VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'build name',
     status VARCHAR(10) NOT NULL DEFAULT '' COMMENT 'status: SUCCESSFUL, FAILED',
     remark VARCHAR(1000) NOT NULL DEFAULT '' COMMENT 'remark',
     ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'created at',
     utime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'updated at',
-    KEY name_idx (name)
+    KEY name_idx (name),
+    UNIQUE KEY build_no_uk (build_no)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COMMENT='Build Log';

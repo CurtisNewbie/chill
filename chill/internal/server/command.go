@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/curtisnewbie/miso/miso"
 )
@@ -17,9 +18,9 @@ func BashRun(rail miso.Rail, script []byte) (string, error) {
 	var err error
 	if cmdout, err = c.CombinedOutput(); err != nil {
 		if cmdout != nil {
-			outstr = string(cmdout)
+			outstr = strings.TrimSpace(miso.UnsafeByt2Str(cmdout))
 		}
-		return outstr, fmt.Errorf("failed to execute bash script, %s, %w", outstr, err)
+		return outstr, fmt.Errorf("%s, %w", outstr, err)
 	}
 	return outstr, nil
 }

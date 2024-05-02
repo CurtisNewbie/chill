@@ -1,4 +1,4 @@
-package build
+package server
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestLookupBuildScript(t *testing.T) {
-	miso.SetProp(PropScriptsBaseFolder, "scripts")
+	miso.SetProp(PropScriptsBaseFolder, "../../testdata")
 	f, err := LookupBuildScript("echo.sh")
 	if err != nil {
 		t.Fatal(err)
@@ -17,4 +17,13 @@ func TestLookupBuildScript(t *testing.T) {
 		t.Fatal(fstr)
 	}
 	t.Log(fstr)
+}
+
+func TestLoadBuildConf(t *testing.T) {
+	err := miso.LoadConfigFromFile("../../conf.yml", miso.EmptyRail())
+	if err != nil {
+		t.Fatal(err)
+	}
+	bc := LoadBuildsConf()
+	t.Logf("%#v", bc)
 }

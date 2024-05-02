@@ -6,10 +6,6 @@ server: # http server
   host: "0.0.0.0"
   port: "8080"
 
-consul:
-  enabled: "false"
-  consulAddress: "localhost:8500"
-
 redis:
   enabled: "true"
   address: "localhost"
@@ -26,6 +22,10 @@ mysql:
   password: ""
   database: "chill"
 
+# consul:
+#   enabled: "false"
+#   consulAddress: "localhost:8500"
+
 # rabbitmq:
 #   enabled: "false"
 #   host: "localhost"
@@ -37,4 +37,19 @@ mysql:
 logging:
   level: "info"
 
-scripts.base-folder: "testdata/scripts"
+scripts.base-folder: "testdata"
+
+build:
+  - name: "build_echo"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_failed"
+    steps:
+      - script: "ech.sh"
+      - command: "echo '2'"
+
+auth:
+  basic:
+    username: "admin"
+    password: "123456"

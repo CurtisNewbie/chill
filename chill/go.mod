@@ -2,7 +2,10 @@ module github.com/curtisnewbie/chill/chill
 
 go 1.21.5
 
-require github.com/curtisnewbie/miso v0.0.30-beta.1
+require (
+	github.com/curtisnewbie/miso v0.0.30-beta.1.0.20240502113957-bdcb9f720e4b
+	gorm.io/gorm v1.23.8
+)
 
 require (
 	github.com/armon/go-metrics v0.4.0 // indirect
@@ -73,5 +76,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.3.6 // indirect
 	gorm.io/driver/sqlite v1.2.6 // indirect
-	gorm.io/gorm v1.23.8 // indirect
 )
