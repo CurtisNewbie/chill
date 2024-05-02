@@ -11,10 +11,10 @@ func RegisterEndpoints(rail miso.Rail) {
 }
 
 func ApiListBuildNames(inb *miso.Inbound) ([]string, error) {
-	bc := LoadBuildsConf()
-	names := make([]string, 0, len(bc.Builds))
-	for i := range bc.Builds {
-		names = append(names, bc.Builds[i].Name)
+	builds := LoadBuilds()
+	names := make([]string, 0, len(builds.Builds))
+	for i := range builds.Builds {
+		names = append(names, builds.Builds[i].Name)
 	}
 	return names, nil
 }

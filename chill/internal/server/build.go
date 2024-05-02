@@ -18,8 +18,8 @@ const (
 )
 
 var (
-	buildsConf BuildsConf
-	bcOnce     sync.Once
+	_builds     Builds
+	_buildsOnce sync.Once
 )
 
 var (
@@ -31,11 +31,11 @@ func init() {
 	miso.SetDefProp(PropScriptsBaseFolder, "./")
 }
 
-type BuildsConf struct {
+type Builds struct {
 	Builds []BuildConf `mapstructure:"build"`
 }
 
-func (b BuildsConf) Find(name string) (BuildConf, bool) {
+func (b Builds) Find(name string) (BuildConf, bool) {
 	for i, ib := range b.Builds {
 		if ib.Name == name {
 			return b.Builds[i], true
@@ -54,24 +54,24 @@ type BuildStep struct {
 	Command string
 }
 
-func LoadBuildsConf() BuildsConf {
-	bcOnce.Do(func() {
-		var bc BuildsConf
-		miso.UnmarshalFromProp(&bc)
-		buildsConf = bc
+func LoadBuilds() Builds {
+	_buildsOnce.Do(func() {
+		var builds Builds
+		miso.UnmarshalFromProp(&builds)
+		_builds = builds
 	})
-	return buildsConf
+	return _builds
 }
 
-func InitBuildStatusMap(bc BuildsConf) {
-	for _, b := range bc.Builds {
+func InitBuildStatusMap(bu Builds) {
+	for _, b := range bu.Builds {
 		buildStatusMap.Store(b.Name, false)
 	}
 }
 
-func CheckBuildsConf(bc BuildsConf) error {
+func CheckBuildsConf(bu Builds) error {
 	names := miso.NewSet[string]()
-	for _, b := range bc.Builds {
+	for _, b := range bu.Builds {
 		if b.Name == "" {
 			return miso.NewErrf("build name should be empty")
 		}
@@ -96,14 +96,14 @@ func LookupBuildScript(path string) ([]byte, error) {
 }
 
 func ListBuildInfos(rail miso.Rail, page miso.Paging, db *gorm.DB) (miso.PageRes[ApiListBuildInfoRes], error) {
-	bc := LoadBuildsConf()
+	builds := LoadBuilds()
 	return miso.NewPageQuery[ApiListBuildInfoRes]().
 		WithPage(page).
 		WithBaseQuery(func(tx *gorm.DB) *gorm.DB {
 			return tx.Table("build_info").Order("id desc")
 		}).
 		ForEach(func(t ApiListBuildInfoRes) ApiListBuildInfoRes {
-			b, ok := bc.Find(t.Name)
+			b, ok := builds.Find(t.Name)
 			if ok {
 				t.BuildSteps = make([]string, 0, len(b.Steps))
 				for _, st := range b.Steps {
@@ -121,8 +121,8 @@ func ListBuildInfos(rail miso.Rail, page miso.Paging, db *gorm.DB) (miso.PageRes
 		Exec(rail, db)
 }
 
-func InitBuildInfo(rail miso.Rail, bc BuildsConf, db *gorm.DB) error {
-	for _, b := range bc.Builds {
+func InitBuildInfo(rail miso.Rail, builds Builds, db *gorm.DB) error {
+	for _, b := range builds.Builds {
 		t := db.Exec(`INSERT IGNORE INTO build_info (name, status) VALUES (?,?)`, b.Name, "SUCCESSFUL")
 		if t.Error != nil {
 			return fmt.Errorf("failed to init build_info record, name: %v, %w", b.Name, t.Error)
@@ -143,7 +143,7 @@ func ListBuildHistory(rail miso.Rail, req ApiListBuildHistoryReq, db *gorm.DB) (
 }
 
 func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
-	b, ok := LoadBuildsConf().Find(req.Name)
+	b, ok := LoadBuilds().Find(req.Name)
 	if !ok {
 		return miso.NewErrf("Build name not found")
 	}

@@ -24,6 +24,6 @@ func TestLoadBuildConf(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	bc := LoadBuildsConf()
-	t.Logf("%#v", bc)
+	builds := LoadBuilds()
+	t.Logf("%#v", builds)
 }
