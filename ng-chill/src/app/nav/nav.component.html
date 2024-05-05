@@ -1,0 +1,9 @@
+<mat-toolbar>
+    <span>Chill</span>
+    <button mat-button [matMenuTriggerFor]="menu">menu</button>
+
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item routerLink="/build/info/list" routerLinkActive="active">Build Info</button>
+        <button mat-menu-item routerLink="/build/history/list" routerLinkActive="active">Build History</button>
+    </mat-menu>
+</mat-toolbar>

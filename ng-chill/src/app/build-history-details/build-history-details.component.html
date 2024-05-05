@@ -1,0 +1,70 @@
+<div class="d-flex flex-column" style="max-width: 70vw">
+
+    <h2 class="mt-2 mb-3">Build History for {{data.name}} - {{data.buildNo}}</h2>
+
+    <p class="m-1">
+        <span class="me-2">Id:</span>
+        <span> {{data.id}} </span>
+    </p>
+
+    <p class="m-1">
+        <span class="me-2">Build No:</span>
+        <span> {{data.buildNo}} </span>
+    </p>
+
+    <p class="m-1">
+        <span class="me-2">Name:</span>
+        <span> {{data.name}} </span>
+    </p>
+
+    <p class="m-1">
+        <span class="me-2">Status:</span>
+        <span *ngIf="data.status == 'SUCCESSFUL'"
+            style="border-radius:10px; padding:5px; background-color:rgba(172, 255, 47, 0.761);"> {{data.status}}
+        </span>
+        <span *ngIf="data.status != 'SUCCESSFUL'"
+            style="border-radius:10px; padding:5px; background-color:rgba(255, 0, 0, 0.58);"> {{data.status}}
+        </span>
+    </p>
+
+    <p class="m-1">
+        <span class="me-2">Build Time</span>
+        <span> {{data.ctime | date: 'yyyy-MM-dd HH:mm:ss'}} </span>
+    </p>
+
+    <h2 class="mt-4">Command Logs:</h2>
+
+    <ng-container *ngIf="data.commandLogs">
+        @for (cmd of data.commandLogs; track $index) {
+
+        <p class="ms-1 mb-1 me-1 mt-3">
+            <span class="me-2">Id:</span>
+            <span> {{cmd.id}} </span>
+        </p>
+
+        <p class="m-1">
+            <span class="me-2">Command:</span>
+            <span> {{cmd.command}} </span>
+        </p>
+
+        <p class="m-1">
+            <span class="me-2">Status:</span>
+            <span *ngIf="cmd.status == 'SUCCESSFUL'"
+                style="border-radius:10px; padding:5px; background-color:rgba(172, 255, 47, 0.761);"> {{cmd.status}}
+            </span>
+            <span *ngIf="cmd.status != 'SUCCESSFUL'"
+                style="border-radius:10px; padding:5px; background-color:rgba(255, 0, 0, 0.58);"> {{cmd.status}}
+            </span>
+        </p>
+
+        @if(cmd.remark) {
+        <mat-form-field class="m-1">
+            <mat-label>Remark</mat-label>
+            <textarea matInput [value]="cmd.remark" readonly="true"></textarea>
+        </mat-form-field>
+        }
+
+        <mat-divider class="mt-1"></mat-divider>
+        }
+    </ng-container>
+</div>
