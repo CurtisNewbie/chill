@@ -3,6 +3,7 @@ package server
 import "github.com/curtisnewbie/miso/miso"
 
 func RegisterEndpoints(rail miso.Rail) {
+	miso.PrepareWebStaticFs(staticFs, taticFsPre)
 	miso.Get("/api/build/list-names", ApiListBuildNames)
 	miso.IPost("/api/build/info/list", ApiListBuildInfos)
 	miso.IPost("/api/build/trigger", ApiTriggerBuild)

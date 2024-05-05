@@ -1,0 +1,35 @@
+#!/bin/bash
+
+version=`git describe --tags --abbrev=0`
+out="app_chill"
+wd=$(pwd)
+front="ng-chill"
+back="chill"
+
+echo "building for $version, working directory: $wd, frontend: $front, backend: $back"
+mkdir "$back/internal/ecd/static/"
+
+echo "build frontend? [n/y]"
+read ans
+
+# npm ci --registry='http://registry.npmmirror.com'
+if [ "$ans" == "y" ]; then
+    echo "building frontend..."
+    rm -r "$back/internal/server/static/*"
+    cd "ng-chill" \
+        && ng build \
+        && cd $wd \
+        && cp ng-chill/dist/ng-chill/browser/* "$back/internal/server/static/"
+
+    if [ "$?" -ne "0" ]; then
+        echo "Build failed"
+        exit -1
+    fi
+fi
+
+echo "building backend..."
+cd "$back" \
+    && go build -o "$out" . \
+    && mv "$out" $wd \
+    && echo "Built $out" \
+    && echo ""
