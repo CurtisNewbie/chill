@@ -48,6 +48,50 @@ build:
     steps:
       - script: "ech.sh"
       - command: "echo '2'"
+  - name: "build_echo_1"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_2"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_3"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_4"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_5"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_6"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_7"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_8"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_9"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_10"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
+  - name: "build_echo_11"
+    steps:
+      - script: "echo.sh"
+      - command: "echo '1'"
 
 auth:
   basic:

@@ -47,22 +47,23 @@ type ApiListBuildHistoryReq struct {
 
 type ApiListBuildHistoryRes struct {
 	Id      int
+	Name    string
 	BuildNo string
 	Status  string
 	Ctime   miso.ETime
-	Remark  string
 }
 
 func ApiListBuildHistory(inb *miso.Inbound, req ApiListBuildHistoryReq) (miso.PageRes[ApiListBuildHistoryRes], error) {
 	return ListBuildHistory(inb.Rail(), req, miso.GetMySQL())
 }
 
-type ApiQryBuildHistReq struct {
+type ApiQryBuildHistDetailReq struct {
 	BuildNo string
 }
 
-type ApiQryBuildHistRes struct {
+type ApiQryBuildHistDetailRes struct {
 	Id          int
+	Name        string
 	BuildNo     string
 	Status      string
 	Ctime       miso.ETime
@@ -77,6 +78,6 @@ type ApiCmdLogRes struct {
 	Status  string
 }
 
-func ApiQryBuildHistoryDetails(inb *miso.Inbound, req ApiQryBuildHistReq) (ApiQryBuildHistRes, error) {
+func ApiQryBuildHistoryDetails(inb *miso.Inbound, req ApiQryBuildHistDetailReq) (ApiQryBuildHistDetailRes, error) {
 	return QryBuildHistDetails(inb.Rail(), miso.GetMySQL(), req)
 }

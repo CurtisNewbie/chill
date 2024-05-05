@@ -135,9 +135,15 @@ func ListBuildHistory(rail miso.Rail, req ApiListBuildHistoryReq, db *gorm.DB) (
 	return miso.NewPageQuery[ApiListBuildHistoryRes]().
 		WithPage(req.Paging).
 		WithBaseQuery(func(tx *gorm.DB) *gorm.DB {
-			return tx.Table("build_log").
-				Where("name = ?", req.Name).
+			tx = tx.Table("build_log").
 				Order("id desc")
+			if req.Name != "" {
+				tx = tx.Where("name = ?", req.Name)
+			}
+			return tx
+		}).
+		WithSelectQuery(func(tx *gorm.DB) *gorm.DB {
+			return tx.Select("id", "name", "build_no", "status", "ctime")
 		}).
 		Exec(rail, db)
 }
@@ -237,28 +243,28 @@ func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, buildNo string, name string,
 	})
 }
 
-func QryBuildHistDetails(rail miso.Rail, db *gorm.DB, req ApiQryBuildHistReq) (ApiQryBuildHistRes, error) {
+func QryBuildHistDetails(rail miso.Rail, db *gorm.DB, req ApiQryBuildHistDetailReq) (ApiQryBuildHistDetailRes, error) {
 
 	var his ApiListBuildHistoryRes
 	err := db.Raw(`SELECT * FROM build_log WHERE build_no = ?`, req.BuildNo).Scan(&his).Error
 	if err != nil {
-		return ApiQryBuildHistRes{}, fmt.Errorf("failed to query build_log, %v, %w", req.BuildNo, err)
+		return ApiQryBuildHistDetailRes{}, fmt.Errorf("failed to query build_log, %v, %w", req.BuildNo, err)
 	}
 
 	var cl []ApiCmdLogRes
-	err = db.Raw(`SELECT id, command, remark, status FROM command_log where build_no = ?`, req.BuildNo).Scan(&cl).Error
+	err = db.Raw(`SELECT id, command, remark, status FROM command_log WHERE build_no = ? ORDER BY id DESC`, req.BuildNo).Scan(&cl).Error
 	if err != nil {
-		return ApiQryBuildHistRes{}, fmt.Errorf("failed to query command_log, %v, %w", req.BuildNo, err)
+		return ApiQryBuildHistDetailRes{}, fmt.Errorf("failed to query command_log, %v, %w", req.BuildNo, err)
 	}
 	if cl == nil {
 		cl = []ApiCmdLogRes{}
 	}
-	return ApiQryBuildHistRes{
+	return ApiQryBuildHistDetailRes{
 		Id:          his.Id,
+		Name:        his.Name,
 		BuildNo:     his.BuildNo,
 		Status:      his.Status,
 		Ctime:       his.Ctime,
-		Remark:      his.Remark,
 		CommandLogs: cl,
 	}, nil
 }
