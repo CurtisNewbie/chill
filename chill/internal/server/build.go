@@ -78,6 +78,12 @@ func CheckBuildsConf(bu Builds) error {
 		if !names.Add(b.Name) {
 			return miso.NewErrf("build name contains duplicate, '%s' already exists", b.Name)
 		}
+		{
+			actual := len([]rune(b.Name))
+			if actual > 128 {
+				return miso.NewErrf("build name exceeds 128 characters (%d characters), '%s'", actual, b.Name)
+			}
+		}
 		if len(b.Steps) < 1 {
 			return miso.NewErrf("build '%s' contains zero step, configuration illegal", b.Name)
 		}
