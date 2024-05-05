@@ -164,8 +164,6 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 		defer buildStatusMap.Store(b.Name, false)
 		defer miso.TimeOp(rail, time.Now(), fmt.Sprintf("build '%s'", b.Name))
 
-		time.Sleep(500 * time.Millisecond)
-
 		var remark string
 		var status string = StatusSuccessful
 		for _, s := range b.Steps {
@@ -226,7 +224,7 @@ func SaveCmdLog(rail miso.Rail, db *gorm.DB, buildNo string, name string, cmd st
 
 func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, buildNo string, name string, status string, remark string) error {
 	return db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Exec(`UPDATE build_info SET status = ? WHERE name = ?`, status, name).Error
+		err := tx.Exec(`UPDATE build_info SET status = ?, utime = ? WHERE name = ?`, status, miso.Now(), name).Error
 		if err != nil {
 			return fmt.Errorf("failed to update build_info, %w", err)
 		}
