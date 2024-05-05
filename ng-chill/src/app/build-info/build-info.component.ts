@@ -50,7 +50,8 @@ export class BuildInfoComponent {
           this.pagingController.onTotalChanged(resp.data.paging);
         },
         error: (err) => {
-          this.toaster.toast(`Request failed: ${err}`)
+          this.toaster.toast(`Request failed`)
+          console.log(err)
         },
       });
   }
@@ -72,7 +73,8 @@ export class BuildInfoComponent {
           this.fetchList();
         },
         error: (err) => {
-          this.toaster.toast(`Request failed: ${err}`)
+          this.toaster.toast(`Request failed`)
+          console.log(err)
         },
       });
   }

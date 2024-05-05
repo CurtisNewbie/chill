@@ -51,7 +51,8 @@ export class BuildHistoryDetailsComponent implements OnInit {
           this.data = resp.data;
         },
         error: (err) => {
-          this.toaster.toast(`Request failed: ${err}`)
+          this.toaster.toast(`Request failed`)
+          console.log(err)
         },
       });
   }

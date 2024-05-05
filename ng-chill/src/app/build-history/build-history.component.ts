@@ -58,7 +58,8 @@ export class BuildHistoryComponent implements OnInit {
           this.pagingController.onTotalChanged(resp.data.paging);
         },
         error: (err) => {
-          this.toaster.toast(`Request failed: ${err}`)
+          this.toaster.toast(`Request failed`)
+          console.log(err)
         },
       });
 
