@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { PagingController } from '../common/paging';
 import { HttpClient } from '@angular/common/http';
 import { Toaster } from '../toaster.service';
+import { NavigationService } from '../navigation.service';
 
 export interface BuildInfo {
   id?: number
@@ -22,14 +23,14 @@ export class BuildInfoComponent {
   data: any[] = []
   pagingController: PagingController;
 
-  constructor(private http: HttpClient, private toaster: Toaster) {
+  constructor(private http: HttpClient, private toaster: Toaster, private nav: NavigationService) {
   }
 
   fetchList() {
     this.http.post<any>("/api/build/info/list", this.pagingController.paging)
       .subscribe({
         next: (resp) => {
-          if (resp.error){
+          if (resp.error) {
             this.toaster.toast(resp.msg);
             return;
           }
@@ -60,11 +61,11 @@ export class BuildInfoComponent {
     this.fetchList();
   }
 
-  triggerBuild(u : BuildInfo) {
-    this.http.post<any>("/api/build/trigger", { name : u.name })
+  triggerBuild(u: BuildInfo) {
+    this.http.post<any>("/api/build/trigger", { name: u.name })
       .subscribe({
         next: (resp) => {
-          if (resp.error){
+          if (resp.error) {
             this.toaster.toast(resp.msg);
             return;
           }
@@ -74,5 +75,11 @@ export class BuildInfoComponent {
           this.toaster.toast(`Request failed: ${err}`)
         },
       });
+  }
+
+  redirectBuildHistory(u: BuildInfo) {
+    this.nav.navigateToUrl("/build/history/list", [
+      { name: u.name },
+    ]);
   }
 }

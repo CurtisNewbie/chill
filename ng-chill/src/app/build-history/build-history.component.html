@@ -3,6 +3,13 @@
 </div>
 
 <div>
+    <div>
+        <mat-form-field style="width: 100%">
+            <mat-label>Build Name</mat-label>
+            <input matInput type="text" [(ngModel)]="name" (keyup)="$event.key == 'Enter' && fetchList()"/>
+        </mat-form-field>
+    </div>
+
     <div class="d-flex justify-content-end">
         <button class="m-2" mat-button (click)="fetchList()">Fetch</button>
     </div>

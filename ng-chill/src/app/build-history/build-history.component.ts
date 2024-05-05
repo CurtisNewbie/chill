@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PagingController } from '../common/paging';
 import { HttpClient } from '@angular/common/http';
 import { Toaster } from '../toaster.service';
 import { NavigationService } from '../navigation.service';
+import { ActivatedRoute } from '@angular/router';
 
 export interface BuildHist {
   id?: number
@@ -17,16 +18,27 @@ export interface BuildHist {
   templateUrl: './build-history.component.html',
   styleUrl: './build-history.component.css'
 })
-export class BuildHistoryComponent {
+export class BuildHistoryComponent implements OnInit {
 
+  name: string = null
   data: any[] = []
   pagingController: PagingController;
 
-  constructor(private http: HttpClient, private toaster: Toaster, private nav: NavigationService) {
+  constructor(private http: HttpClient, private toaster: Toaster,
+    private nav: NavigationService, private route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe((params) => {
+      let n = params.get("name");
+      if (n) {
+        this.name = n;
+      }
+    });
   }
 
   fetchList() {
-    this.http.post<any>("/api/build/history/list", { paging: this.pagingController.paging })
+    this.http.post<any>("/api/build/history/list", { paging: this.pagingController.paging, name: this.name })
       .subscribe({
         next: (resp) => {
           if (resp.error) {
