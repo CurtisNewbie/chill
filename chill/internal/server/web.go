@@ -21,12 +21,13 @@ func ApiListBuildNames(inb *miso.Inbound) ([]string, error) {
 }
 
 type ApiListBuildInfoRes struct {
-	Id         int
-	Name       string
-	Status     string
-	Ctime      miso.ETime
-	Utime      miso.ETime
-	BuildSteps []string `gorm:"-"`
+	Id          int
+	Name        string
+	Status      string
+	Ctime       miso.ETime
+	Utime       miso.ETime
+	BuildSteps  []string `gorm:"-"`
+	Triggerable bool     `gorm:"-"`
 }
 
 func ApiListBuildInfos(inb *miso.Inbound, req miso.Paging) (miso.PageRes[ApiListBuildInfoRes], error) {

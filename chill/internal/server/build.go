@@ -14,6 +14,7 @@ const (
 	PropScriptsBaseFolder = "scripts.base-folder"
 
 	StatusSuccessful = "SUCCESSFUL"
+	StatusBuilding   = "BUILDING"
 	StatusFailed     = "FAILED"
 )
 
@@ -121,6 +122,12 @@ func ListBuildInfos(rail miso.Rail, page miso.Paging, db *gorm.DB) (miso.PageRes
 					}
 					t.BuildSteps = append(t.BuildSteps, ss)
 				}
+				t.Triggerable = true
+
+				if v, ok := buildStatusMap.Load(b.Name); ok && v.(bool) {
+					t.Status = StatusBuilding
+					t.Triggerable = false
+				}
 			}
 			return t
 		}).
@@ -129,7 +136,7 @@ func ListBuildInfos(rail miso.Rail, page miso.Paging, db *gorm.DB) (miso.PageRes
 
 func InitBuildInfo(rail miso.Rail, builds Builds, db *gorm.DB) error {
 	for _, b := range builds.Builds {
-		t := db.Exec(`INSERT IGNORE INTO build_info (name, status) VALUES (?,?)`, b.Name, "SUCCESSFUL")
+		t := db.Exec(`INSERT IGNORE INTO build_info (name, status) VALUES (?,?)`, b.Name, StatusSuccessful)
 		if t.Error != nil {
 			return fmt.Errorf("failed to init build_info record, name: %v, %w", b.Name, t.Error)
 		}

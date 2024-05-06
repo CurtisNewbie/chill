@@ -8,6 +8,7 @@ export interface BuildInfo {
   id?: number
   name?: string
   status?: string
+  triggerable?: boolean
   ctime?: number | Date
   utime?: number | Date
   buildSteps?: string[]
