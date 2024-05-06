@@ -6,5 +6,5 @@ import "embed"
 var staticFs embed.FS
 
 const (
-	taticFsPre = "/static"
+	staticFsPre = "/static"
 )
