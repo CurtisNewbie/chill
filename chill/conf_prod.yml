@@ -4,11 +4,11 @@ app.name: "chill"
 server: # http server
   enabled: "true"
   host: "0.0.0.0"
-  port: "8080"
+  port: "8100"
 
 redis:
   enabled: "true"
-  address: "localhost"
+  address: "redis"
   port: "6379"
   username: ""
   password: ""
@@ -40,7 +40,7 @@ logging:
     file: "logs/chill.log"
 
 
-scripts.base-folder: "/usr/data/scripts"
+scripts.base-folder: "/usr/src/scripts"
 
 auth:
   basic:

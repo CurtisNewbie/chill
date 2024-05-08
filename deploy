@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# --------- remote
+remote="alphaboi@curtisnewbie.com"
+service="chill"
+remote_build_path="~/services/${service}/build/"
+remote_config_path="~/services/${service}/config/"
+os="linux"
+arch="amd64"
+dockerfile="./Dockerfile"
+# ---------
+
+version=`git describe --tags --abbrev=0`
+out="app_chill"
+wd=$(pwd)
+front="ng-chill"
+back="chill"
+
+echo "building for $version, working directory: $wd, frontend: $front, backend: $back"
+mkdir "$back/internal/server/static/"
+
+echo "build frontend? [n/y]"
+read ans
+
+# npm ci --registry='http://registry.npmmirror.com'
+if [ "$ans" == "y" ]; then
+    echo "building frontend..."
+    rm -r "$back/internal/server/static/*"
+    cd "ng-chill" \
+        && ng build \
+        && cd $wd \
+        && cp ng-chill/dist/ng-chill/browser/* "$back/internal/server/static/"
+
+    if [ "$?" -ne "0" ]; then
+        echo "Build failed"
+        exit -1
+    fi
+fi
+
+echo "building backend..."
+cd "$back" \
+    && CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" go build -o "$out" . \
+    && mv "$out" $wd \
+    && echo "Built $out" \
+    && echo ""
+
+cd "$wd"
+
+if [ ! -f "$out" ]; then
+    echo "$out not found"
+    exit -1
+fi
+
+ssh  "alphaboi@curtisnewbie.com" "rm -rv ${remote_build_path}*"
+
+rsync -av -e ssh $back/conf_prod.yml "${remote}:${remote_config_path}/conf.yml"
+if [ ! $? -eq 0 ]; then
+    exit -1
+fi
+
+rsync -av -e ssh "./$out" "${remote}:${remote_build_path}"
+if [ ! $? -eq 0 ]; then
+    exit -1
+fi
+
+rsync -av -e ssh "$dockerfile" "${remote}:${remote_build_path}/Dockerfile"
+if [ ! $? -eq 0 ]; then
+    exit -1
+fi
+
+ssh  "alphaboi@curtisnewbie.com" "cd services; docker-compose up -d --build ${service}"
+
+# cleanup
+if [ -f "$out" ]; then
+    rm "$out"
+fi
