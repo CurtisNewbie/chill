@@ -6,14 +6,6 @@ server: # http server
   host: "0.0.0.0"
   port: "8100"
 
-redis:
-  enabled: "true"
-  address: "localhost"
-  port: "6379"
-  username: ""
-  password: ""
-  database: "0"
-
 mysql:
   enabled: "true"
   host: "localhost"
@@ -21,6 +13,14 @@ mysql:
   user: "root"
   password: ""
   database: "chill"
+
+# redis:
+#   enabled: "true"
+#   address: "localhost"
+#   port: "6379"
+#   username: ""
+#   password: ""
+#   database: "0"
 
 # consul:
 #   enabled: "false"

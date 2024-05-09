@@ -1,0 +1,15 @@
+[Unit]
+Description=Chill
+After=syslog.target network.target
+
+[Service]
+SuccessExitStatus=143
+User=alphaboi
+Group=alphaboi
+Type=forking
+WorkingDirectory=/home/alphaboi/services/chill/build
+ExecStart=/bin/bash /home/alphaboi/services/chill/build/restart.sh
+ExecStop=/bin/echo "Killing $MAINPID" && /bin/kill -15 $MAINPID
+
+[Install]
+WantedBy=multi-user.target
