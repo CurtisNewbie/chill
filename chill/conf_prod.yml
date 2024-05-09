@@ -39,10 +39,15 @@ logging:
   rolling:
     file: "logs/chill.log"
 
-scripts.base-folder: "/usr/src/scripts"
+scripts.base-folder: "scripts"
 
 auth:
   basic:
     username: "${CHILL_USERNAME}"
     password: "${CHILL_PASSWORD}"
 
+
+build:
+  - name: "build_mini-fstore"
+    steps:
+      - script: "mini-fstore.sh"
