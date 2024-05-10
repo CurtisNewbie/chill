@@ -8,6 +8,9 @@ const (
 )
 
 func EnableBasicAuth() {
+	if !miso.IsProdMode() {
+		return
+	}
 	miso.EnableBasicAuth(func(username, password, url, method string) bool {
 		return username == miso.GetPropStr(PropUsername) && password == miso.GetPropStr(PropPassword)
 	})
