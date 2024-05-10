@@ -21,13 +21,13 @@ func ApiListBuildNames(inb *miso.Inbound) ([]string, error) {
 }
 
 type ApiListBuildInfoRes struct {
-	Id          int
-	Name        string
-	Status      string
-	Ctime       miso.ETime
-	Utime       miso.ETime
-	BuildSteps  []string `gorm:"-"`
-	Triggerable bool     `gorm:"-"`
+	Id          int        `desc:"build info id"`
+	Name        string     `desc:"build name"`
+	Status      string     `desc:"last build status"`
+	Ctime       miso.ETime `desc:"create time"`
+	Utime       miso.ETime `desc:"update time"`
+	BuildSteps  []string   `gorm:"-" desc:"build steps"`
+	Triggerable bool       `gorm:"-" desc:"whether the build is triggerable"`
 }
 
 func ApiListBuildInfos(inb *miso.Inbound, req miso.Paging) (miso.PageRes[ApiListBuildInfoRes], error) {
@@ -35,7 +35,7 @@ func ApiListBuildInfos(inb *miso.Inbound, req miso.Paging) (miso.PageRes[ApiList
 }
 
 type ApiTriggerBuildReq struct {
-	Name string
+	Name string `desc:"build name" vaild:"notEmpty"`
 }
 
 func ApiTriggerBuild(inb *miso.Inbound, req ApiTriggerBuildReq) (any, error) {
@@ -43,16 +43,16 @@ func ApiTriggerBuild(inb *miso.Inbound, req ApiTriggerBuildReq) (any, error) {
 }
 
 type ApiListBuildHistoryReq struct {
-	Name   string
+	Name   string `desc:"build name" vaild:"notEmpty"`
 	Paging miso.Paging
 }
 
 type ApiListBuildHistoryRes struct {
-	Id      int
-	Name    string
-	BuildNo string
-	Status  string
-	Ctime   miso.ETime
+	Id      int        `desc:"build history id"`
+	Name    string     `desc:"build name"`
+	BuildNo string     `desc:"build no"`
+	Status  string     `desc:"built status"`
+	Ctime   miso.ETime `desc:"create time"`
 }
 
 func ApiListBuildHistory(inb *miso.Inbound, req ApiListBuildHistoryReq) (miso.PageRes[ApiListBuildHistoryRes], error) {
@@ -60,24 +60,24 @@ func ApiListBuildHistory(inb *miso.Inbound, req ApiListBuildHistoryReq) (miso.Pa
 }
 
 type ApiQryBuildHistDetailReq struct {
-	BuildNo string
+	BuildNo string `desc:"build no" vaild:"notEmpty"`
 }
 
 type ApiQryBuildHistDetailRes struct {
-	Id          int
-	Name        string
-	BuildNo     string
-	Status      string
-	Ctime       miso.ETime
-	Remark      string
-	CommandLogs []ApiCmdLogRes
+	Id          int            `desc:"build history id"`
+	Name        string         `desc:"build name"`
+	BuildNo     string         `desc:"build no"`
+	Status      string         `desc:"built status"`
+	Ctime       miso.ETime     `desc:"create time"`
+	Remark      string         `desc:"remark"`
+	CommandLogs []ApiCmdLogRes `desc:"commands execution log"`
 }
 
 type ApiCmdLogRes struct {
-	Id      int
-	Command string
-	Remark  string
-	Status  string
+	Id      int    `desc:"command log id"`
+	Command string `desc:"command"`
+	Remark  string `desc:"remark"`
+	Status  string `desc:"execution status"`
 }
 
 func ApiQryBuildHistoryDetails(inb *miso.Inbound, req ApiQryBuildHistDetailReq) (ApiQryBuildHistDetailRes, error) {
