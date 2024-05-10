@@ -3,7 +3,7 @@ module github.com/curtisnewbie/chill/chill
 go 1.20
 
 require (
-	github.com/curtisnewbie/miso v0.0.30-beta.2
+	github.com/curtisnewbie/miso v0.0.31-beta.2
 	gorm.io/gorm v1.23.8
 )
 
