@@ -208,7 +208,7 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 			if remark != "" {
 				remark = miso.MaxLenStr(remark, 1000)
 			}
-			if scerr := SaveCmdLog(rail, db, buildNo, b.Name, cmd, status, remark); scerr != nil {
+			if scerr := SaveCmdLog(rail, db, buildNo, cmd, status, remark); scerr != nil {
 				rail.Errorf("Failed to save command log, build: %s, %v", b.Name, scerr)
 				return
 			}
@@ -236,9 +236,9 @@ func RunStep(rail miso.Rail, step BuildStep) (string, error) {
 	}
 }
 
-func SaveCmdLog(rail miso.Rail, db *gorm.DB, buildNo string, name string, cmd string, status string, remark string) error {
-	return db.Exec(`INSERT INTO command_log (build_no, build_name,command,remark,status) VALUES
-	(?,?,?,?,?)`, buildNo, name, cmd, remark, status).Error
+func SaveCmdLog(rail miso.Rail, db *gorm.DB, buildNo string, cmd string, status string, remark string) error {
+	return db.Exec(`INSERT INTO command_log (build_no,command,remark,status) VALUES
+	(?,?,?,?)`, buildNo, cmd, remark, status).Error
 }
 
 func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, buildNo string, name string, status string, remark string) error {

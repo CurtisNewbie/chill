@@ -1,0 +1,1 @@
+alter table chill.command_log drop column build_name;

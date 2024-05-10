@@ -5,7 +5,6 @@ CREATE DATABASE IF NOT EXISTS chill;
 CREATE TABLE IF NOT EXISTS chill.command_log (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'primary key',
     build_no VARCHAR(32) NOT NULL DEFAULT '' COMMENT 'build no',
-    build_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'build name',
     command TEXT COMMENT 'command',
     remark VARCHAR(1000) NOT NULL DEFAULT '' COMMENT 'remark',
     status VARCHAR(10) NOT NULL DEFAULT '' COMMENT 'status: SUCCESSFUL, FAILED',

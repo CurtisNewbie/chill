@@ -3,7 +3,7 @@ module github.com/curtisnewbie/chill/chill
 go 1.20
 
 require (
-	github.com/curtisnewbie/miso v0.0.31-beta.2
+	github.com/curtisnewbie/miso v0.0.31-beta.2.0.20240510163838-5feb88626fc9
 	gorm.io/gorm v1.23.8
 )
 
@@ -12,7 +12,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bsm/redislock v0.0.0-20191219095057-3d76f17a9f1e // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/curtisnewbie/svc v0.0.4 // indirect
+	github.com/curtisnewbie/svc v0.0.5 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
