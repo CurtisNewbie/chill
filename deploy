@@ -57,7 +57,7 @@ fi
 
 rsync -av -e ssh $back/conf_prod.yml "${remote}:${remote_build_path}/conf.yml" \
     && rsync -av -e ssh "./$out" "${remote}:${remote_build_path}" \
-    && rsync -av -e ssh "scripts" "${remote}:${remote_build_path}" \
+    && rsync -av -e ssh "./chill/scripts" "${remote}:${remote_build_path}" \
     && ssh "alphaboi@curtisnewbie.com" "sudo /bin/systemctl restart chill.service"
 
 if [ $? -ne 0 ]; then
