@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS chill.build_log (
     name VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'build name',
     status VARCHAR(10) NOT NULL DEFAULT '' COMMENT 'status: SUCCESSFUL, FAILED',
     remark VARCHAR(1000) NOT NULL DEFAULT '' COMMENT 'remark',
+    build_start_time TIMESTAMP COMMENT 'build start time',
+    build_end_time TIMESTAMP COMMENT 'build end time',
     ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'created at',
     utime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'updated at',
     KEY name_idx (name),

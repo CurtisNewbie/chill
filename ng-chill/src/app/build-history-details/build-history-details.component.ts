@@ -12,10 +12,11 @@ export interface HistCommandLog {
 
 export interface BuildHistDetails {
   id?: number
-  name ?:string
+  name?: string
   buildNo?: string
   status?: string
-  ctime?: number | Date
+  startTime?: number | Date
+  endTime?: number | Date
   commandLogs?: HistCommandLog[]
 }
 

@@ -6,11 +6,12 @@ import { NavigationService } from '../navigation.service';
 import { ActivatedRoute } from '@angular/router';
 
 export interface BuildHist {
-  id?: number
-  name?: string
-  buildNo?: string
-  status?: string
-  ctime?: number | Date
+  id?: number                    // build history id
+  name?: string                  // build name
+  buildNo?: string               // build no
+  status?: string                // built status
+  startTime?: number             // build start time
+  endTime?: number               // build end time
 }
 
 @Component({
@@ -21,7 +22,7 @@ export interface BuildHist {
 export class BuildHistoryComponent implements OnInit {
 
   name: string = null
-  data: any[] = []
+  data: BuildHist[] = []
   pagingController: PagingController;
 
   constructor(private http: HttpClient, private toaster: Toaster,
@@ -49,9 +50,6 @@ export class BuildHistoryComponent implements OnInit {
           this.data = [];
           if (resp.data.payload) {
             for (let r of resp.data.payload) {
-              if (r.ctime) {
-                r.ctime = new Date(r.ctime);
-              }
               this.data.push(r);
             }
           }

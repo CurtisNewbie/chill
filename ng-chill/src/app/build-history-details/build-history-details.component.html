@@ -28,8 +28,13 @@
     </p>
 
     <p class="m-1">
-        <span class="me-2">Build Time</span>
-        <span> {{data.ctime | date: 'yyyy-MM-dd HH:mm:ss'}} </span>
+        <span class="me-2">Start Time</span>
+        <span> {{data.startTime | date: 'yyyy-MM-dd HH:mm:ss'}} </span>
+    </p>
+
+    <p class="m-1">
+        <span class="me-2">End Time</span>
+        <span> {{data.endTime | date: 'yyyy-MM-dd HH:mm:ss'}} </span>
     </p>
 
     <h2 class="mt-4">Command Logs:</h2>
@@ -60,7 +65,7 @@
         @if(cmd.remark) {
         <mat-form-field class="m-1">
             <mat-label>Remark</mat-label>
-            <textarea matInput [value]="cmd.remark" readonly="true"></textarea>
+            <textarea style="min-height: 300px;" #remarkTextArea [scrollTop]="remarkTextArea.scrollHeight" matInput [value]="cmd.remark" readonly="true"></textarea>
         </mat-form-field>
         }
 

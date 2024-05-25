@@ -48,11 +48,12 @@ type ApiListBuildHistoryReq struct {
 }
 
 type ApiListBuildHistoryRes struct {
-	Id      int        `desc:"build history id"`
-	Name    string     `desc:"build name"`
-	BuildNo string     `desc:"build no"`
-	Status  string     `desc:"built status"`
-	Ctime   miso.ETime `desc:"create time"`
+	Id        int        `desc:"build history id"`
+	Name      string     `desc:"build name"`
+	BuildNo   string     `desc:"build no"`
+	Status    string     `desc:"built status"`
+	StartTime miso.ETime `desc:"build start time"`
+	EndTime   miso.ETime `desc:"build end time"`
 }
 
 func ApiListBuildHistory(inb *miso.Inbound, req ApiListBuildHistoryReq) (miso.PageRes[ApiListBuildHistoryRes], error) {
@@ -68,7 +69,8 @@ type ApiQryBuildHistDetailRes struct {
 	Name        string         `desc:"build name"`
 	BuildNo     string         `desc:"build no"`
 	Status      string         `desc:"built status"`
-	Ctime       miso.ETime     `desc:"create time"`
+	StartTime   miso.ETime     `desc:"build start time"`
+	EndTime     miso.ETime     `desc:"build end time"`
 	Remark      string         `desc:"remark"`
 	CommandLogs []ApiCmdLogRes `desc:"commands execution log"`
 }

@@ -51,3 +51,6 @@ build:
   - name: "build_mini-fstore"
     steps:
       - script: "mini-fstore.sh"
+  - name: "build_doc-indexer"
+    steps:
+      - script: "doc-indexer.sh"

@@ -156,7 +156,7 @@ func ListBuildHistory(rail miso.Rail, req ApiListBuildHistoryReq, db *gorm.DB) (
 			return tx
 		}).
 		WithSelectQuery(func(tx *gorm.DB) *gorm.DB {
-			return tx.Select("id", "name", "build_no", "status", "ctime")
+			return tx.Select("id", "name", "build_no", "status", "build_start_time start_time", "build_end_time end_time")
 		}).
 		Exec(rail, db)
 }
@@ -173,6 +173,7 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 	}
 
 	buildPool.Go(func() {
+		stime := miso.Now()
 		rail = rail.NextSpan()
 		buildNo := miso.GenIdP("build_")
 		if !buildStatusMap.CompareAndSwap(b.Name, false, true) {
@@ -206,7 +207,7 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 			}
 
 			if remark != "" {
-				remark = miso.MaxLenStr(remark, 1000)
+				remark = LastNStr(remark, 1000)
 			}
 			if scerr := SaveCmdLog(rail, db, buildNo, cmd, status, remark); scerr != nil {
 				rail.Errorf("Failed to save command log, build: %s, %v", b.Name, scerr)
@@ -217,7 +218,7 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 			}
 		}
 
-		if er := UpdateBuildStatus(rail, db, buildNo, b.Name, status, remark); er != nil {
+		if er := UpdateBuildStatus(rail, db, buildNo, b.Name, status, remark, stime, miso.Now()); er != nil {
 			rail.Errorf("Failed to save build log, build: %s, %v", b.Name, er)
 		}
 	})
@@ -241,14 +242,16 @@ func SaveCmdLog(rail miso.Rail, db *gorm.DB, buildNo string, cmd string, status 
 	(?,?,?,?)`, buildNo, cmd, remark, status).Error
 }
 
-func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, buildNo string, name string, status string, remark string) error {
+func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, buildNo string, name string, status string, remark string,
+	stime miso.ETime, etime miso.ETime) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 		err := tx.Exec(`UPDATE build_info SET status = ?, utime = ? WHERE name = ?`, status, miso.Now(), name).Error
 		if err != nil {
 			return fmt.Errorf("failed to update build_info, %w", err)
 		}
 
-		err = tx.Exec(`INSERT INTO build_log (build_no, name, status, remark) VALUES (?,?,?,?)`, buildNo, name, status, remark).Error
+		err = tx.Exec(`INSERT INTO build_log (build_no, name, status, remark, build_start_time, build_end_time) VALUES (?,?,?,?,?,?)`,
+			buildNo, name, status, remark, stime, etime).Error
 		if err != nil {
 			return fmt.Errorf("failed to save build_log, %w", err)
 		}
@@ -259,7 +262,9 @@ func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, buildNo string, name string,
 func QryBuildHistDetails(rail miso.Rail, db *gorm.DB, req ApiQryBuildHistDetailReq) (ApiQryBuildHistDetailRes, error) {
 
 	var his ApiListBuildHistoryRes
-	err := db.Raw(`SELECT * FROM build_log WHERE build_no = ?`, req.BuildNo).Scan(&his).Error
+	err := db.
+		Raw(`SELECT id, name, build_no, status, build_start_time start_time, build_end_time end_time FROM build_log WHERE build_no = ?`, req.BuildNo).
+		Scan(&his).Error
 	if err != nil {
 		return ApiQryBuildHistDetailRes{}, fmt.Errorf("failed to query build_log, %v, %w", req.BuildNo, err)
 	}
@@ -277,7 +282,16 @@ func QryBuildHistDetails(rail miso.Rail, db *gorm.DB, req ApiQryBuildHistDetailR
 		Name:        his.Name,
 		BuildNo:     his.BuildNo,
 		Status:      his.Status,
-		Ctime:       his.Ctime,
+		StartTime:   his.StartTime,
+		EndTime:     his.EndTime,
 		CommandLogs: cl,
 	}, nil
+}
+
+func LastNStr(s string, n int) string {
+	ru := []rune(s)
+	if len(ru) <= n {
+		return s
+	}
+	return string(ru[len(ru)-n:])
 }
