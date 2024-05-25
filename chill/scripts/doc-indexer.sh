@@ -3,7 +3,7 @@ build="docindexer_build"
 cd ~/git/doc-indexer \
     && git fetch \
     && git pull \
-    && CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" /usr/local/go/bin/go build -o "$build" \
+    && CGO_ENABLED=0 GOOS="linux" GOARCH="amd64" /usr/local/go/bin/go build -o "$build" \
     && cp "$build" ~/services/docindexer/build/ \
     && cp ./prod-conf.yml ~/services/docindexer/config/conf.yml \
     && cp ./Dockerfile_local ~/services/docindexer/build/Dockerfile \
