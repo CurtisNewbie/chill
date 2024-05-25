@@ -46,13 +46,18 @@ func (b Builds) Find(name string) (BuildConf, bool) {
 }
 
 type BuildConf struct {
-	Name  string
-	Steps []BuildStep
+	Name    string
+	GitRepo string `mapstructure:"git-repo"`
+	Steps   []BuildCmd
 }
 
-type BuildStep struct {
+type BuildCmd struct {
 	Script  string
 	Command string
+}
+
+func (b BuildCmd) IsEmpty() bool {
+	return b.Script == "" && b.Command == ""
 }
 
 func LoadBuilds() Builds {
@@ -184,10 +189,23 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 		defer buildStatusMap.Store(b.Name, false)
 		defer miso.TimeOp(rail, time.Now(), fmt.Sprintf("build '%s'", b.Name))
 
+		// get commit id
+		var commitId string
+		if b.GitRepo != "" {
+			commitIdCmd := fmt.Sprintf("cd %s && git rev-parse HEAD", b.GitRepo)
+			cid, err := RunBuildCmd(rail, BuildCmd{Command: commitIdCmd})
+			if err == nil {
+				commitId = cid
+				rail.Infof("Executed %v %#v, commit_id: %s", b.Name, commitIdCmd, commitId)
+			} else {
+				rail.Errorf("Failed to get build commit_id, %v, '%s', %v", b.Name, commitIdCmd, err)
+			}
+		}
+
 		var remark string
 		var status string = StatusSuccessful
 		for _, s := range b.Steps {
-			out, sterr := RunStep(rail, s)
+			out, sterr := RunBuildCmd(rail, s)
 			if sterr != nil {
 				rail.Warnf("Failed to run step %#v, build: %s, %v, %v", s, b.Name, out, sterr)
 			}
@@ -218,18 +236,26 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 			}
 		}
 
-		if er := UpdateBuildStatus(rail, db, buildNo, b.Name, status, remark, stime, miso.Now()); er != nil {
-			rail.Errorf("Failed to save build log, build: %s, %v", b.Name, er)
+		ubsp := UpdateBuildStatusParam{BuildNo: buildNo,
+			Name:      b.Name,
+			Status:    status,
+			Remark:    remark,
+			StartTime: stime,
+			EndTime:   miso.Now(),
+			CommitId:  commitId,
+		}
+		if er := UpdateBuildStatus(rail, db, ubsp); er != nil {
+			rail.Errorf("Failed to save build log, build: %s, %#v, %v", b.Name, ubsp, er)
 		}
 	})
 	return nil
 }
 
-func RunStep(rail miso.Rail, step BuildStep) (string, error) {
-	if step.Command != "" {
-		return BashRun(rail, miso.UnsafeStr2Byt(step.Command))
+func RunBuildCmd(rail miso.Rail, cmd BuildCmd) (string, error) {
+	if cmd.Command != "" {
+		return BashRun(rail, miso.UnsafeStr2Byt(cmd.Command))
 	} else {
-		file, err := LookupBuildScript(step.Script)
+		file, err := LookupBuildScript(cmd.Script)
 		if err != nil {
 			return "", fmt.Errorf("failed to load build script, %v", file)
 		}
@@ -242,16 +268,25 @@ func SaveCmdLog(rail miso.Rail, db *gorm.DB, buildNo string, cmd string, status 
 	(?,?,?,?)`, buildNo, cmd, remark, status).Error
 }
 
-func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, buildNo string, name string, status string, remark string,
-	stime miso.ETime, etime miso.ETime) error {
+type UpdateBuildStatusParam struct {
+	BuildNo   string
+	Name      string
+	Status    string
+	Remark    string
+	CommitId  string
+	StartTime miso.ETime
+	EndTime   miso.ETime
+}
+
+func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, p UpdateBuildStatusParam) error {
 	return db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Exec(`UPDATE build_info SET status = ?, utime = ? WHERE name = ?`, status, miso.Now(), name).Error
+		err := tx.Exec(`UPDATE build_info SET status = ?, utime = ?, commit_id = ? WHERE name = ?`, p.Status, miso.Now(), p.CommitId, p.Name).Error
 		if err != nil {
 			return fmt.Errorf("failed to update build_info, %w", err)
 		}
 
 		err = tx.Exec(`INSERT INTO build_log (build_no, name, status, remark, build_start_time, build_end_time) VALUES (?,?,?,?,?,?)`,
-			buildNo, name, status, remark, stime, etime).Error
+			p.BuildNo, p.Name, p.Status, p.Remark, p.StartTime, p.EndTime).Error
 		if err != nil {
 			return fmt.Errorf("failed to save build_log, %w", err)
 		}

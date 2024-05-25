@@ -54,3 +54,4 @@ build:
   - name: "build_doc-indexer"
     steps:
       - script: "doc-indexer.sh"
+    git-repo: "~/git/doc-indexer"

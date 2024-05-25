@@ -26,6 +26,7 @@ type ApiListBuildInfoRes struct {
 	Status      string     `desc:"last build status"`
 	Ctime       miso.ETime `desc:"create time"`
 	Utime       miso.ETime `desc:"update time"`
+	CommitId    string     `desc:"last build commit id"`
 	BuildSteps  []string   `gorm:"-" desc:"build steps"`
 	Triggerable bool       `gorm:"-" desc:"whether the build is triggerable"`
 }

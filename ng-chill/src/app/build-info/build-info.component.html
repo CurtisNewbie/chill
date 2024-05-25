@@ -43,6 +43,11 @@
             <td mat-cell *matCellDef="let u"> {{u.utime | date: 'yyyy-MM-dd HH:mm:ss'}} </td>
         </ng-container>
 
+        <ng-container matColumnDef="commitId">
+            <th mat-header-cell *matHeaderCellDef> Commit Id</th>
+            <td mat-cell *matCellDef="let u"> {{u.commitId}} </td>
+        </ng-container>
+
         <ng-container matColumnDef="op">
             <th mat-header-cell *matHeaderCellDef> </th>
             <td mat-cell *matCellDef="let u">
@@ -55,8 +60,8 @@
             </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="['id', 'name', 'status', 'ctime', 'utime', 'op']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['id', 'name', 'status', 'ctime', 'utime', 'op'];"></tr>
+        <tr mat-header-row *matHeaderRowDef="['id', 'name', 'status', 'ctime', 'utime', 'commitId', 'op']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['id', 'name', 'status', 'ctime', 'utime', 'commitId', 'op'];"></tr>
     </table>
 
     <app-controlled-paginator (controllerReady)="onPagingControllerReady($event)"></app-controlled-paginator>

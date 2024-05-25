@@ -4,14 +4,15 @@ import { HttpClient } from '@angular/common/http';
 import { Toaster } from '../toaster.service';
 import { NavigationService } from '../navigation.service';
 
-export interface BuildInfo {
-  id?: number
-  name?: string
-  status?: string
-  triggerable?: boolean
-  ctime?: number | Date
-  utime?: number | Date
-  buildSteps?: string[]
+export interface ApiListBuildInfoRes {
+  id?: number                    // build info id
+  name?: string                  // build name
+  status?: string                // last build status
+  ctime?: number                 // create time
+  utime?: number                 // update time
+  commitId?: string              // last build commit id
+  buildSteps?: string[]          // build steps
+  triggerable?: boolean          // whether the build is triggerable
 }
 
 @Component({
@@ -21,7 +22,7 @@ export interface BuildInfo {
 })
 export class BuildInfoComponent {
 
-  data: any[] = []
+  data: ApiListBuildInfoRes[] = []
   pagingController: PagingController;
 
   constructor(private http: HttpClient, private toaster: Toaster, private nav: NavigationService) {
@@ -38,15 +39,7 @@ export class BuildInfoComponent {
 
           this.data = [];
           if (resp.data.payload) {
-            for (let r of resp.data.payload) {
-              if (r.ctime) {
-                r.ctime = new Date(r.ctime);
-              }
-              if (r.utime) {
-                r.utime = new Date(r.utime);
-              }
-              this.data.push(r);
-            }
+            this.data = resp.data.payload;
           }
           this.pagingController.onTotalChanged(resp.data.paging);
         },
@@ -63,7 +56,7 @@ export class BuildInfoComponent {
     this.fetchList();
   }
 
-  triggerBuild(u: BuildInfo) {
+  triggerBuild(u: ApiListBuildInfoRes) {
     this.http.post<any>("/api/build/trigger", { name: u.name })
       .subscribe({
         next: (resp) => {
@@ -80,7 +73,7 @@ export class BuildInfoComponent {
       });
   }
 
-  redirectBuildHistory(u: BuildInfo) {
+  redirectBuildHistory(u: ApiListBuildInfoRes) {
     this.nav.navigateToUrl("/build/history/list", [
       { name: u.name },
     ]);
