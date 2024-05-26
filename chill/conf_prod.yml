@@ -59,3 +59,14 @@ build:
     steps:
       - script: "user-vault.sh"
     git-repo: "~/git/user-vault"
+  - name: "build_event-pump"
+    steps:
+      - script: "event-pump.sh"
+    git-repo: "~/git/event-pump"
+  - name: "build_logbot"
+    steps:
+      - script: "logbot.sh"
+    git-repo: "~/git/logbot"
+  - name: "restart_nginx"
+    steps:
+      - command: "cd ~/services && docker-compose restart nginx"
