@@ -318,6 +318,7 @@ func QryBuildHistDetails(rail miso.Rail, db *gorm.DB, req ApiQryBuildHistDetailR
 		Id:          his.Id,
 		Name:        his.Name,
 		BuildNo:     his.BuildNo,
+		CommitId:    his.CommitId,
 		Status:      his.Status,
 		StartTime:   his.StartTime,
 		EndTime:     his.EndTime,
