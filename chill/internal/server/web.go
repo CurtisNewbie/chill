@@ -52,6 +52,7 @@ type ApiListBuildHistoryRes struct {
 	Id        int        `desc:"build history id"`
 	Name      string     `desc:"build name"`
 	BuildNo   string     `desc:"build no"`
+	CommitId  string     `desc:"build commit id"`
 	Status    string     `desc:"built status"`
 	StartTime miso.ETime `desc:"build start time"`
 	EndTime   miso.ETime `desc:"build end time"`
@@ -69,6 +70,7 @@ type ApiQryBuildHistDetailRes struct {
 	Id          int            `desc:"build history id"`
 	Name        string         `desc:"build name"`
 	BuildNo     string         `desc:"build no"`
+	CommitId    string         `desc:"build commit id"`
 	Status      string         `desc:"built status"`
 	StartTime   miso.ETime     `desc:"build start time"`
 	EndTime     miso.ETime     `desc:"build end time"`

@@ -5,10 +5,11 @@ import { Toaster } from '../toaster.service';
 import { NavigationService } from '../navigation.service';
 import { ActivatedRoute } from '@angular/router';
 
-export interface BuildHist {
+export interface ApiListBuildHistoryRes {
   id?: number                    // build history id
   name?: string                  // build name
   buildNo?: string               // build no
+  commitId?: string              // build commit id
   status?: string                // built status
   startTime?: number             // build start time
   endTime?: number               // build end time
@@ -22,7 +23,7 @@ export interface BuildHist {
 export class BuildHistoryComponent implements OnInit {
 
   name: string = null
-  data: BuildHist[] = []
+  data: ApiListBuildHistoryRes[] = []
   pagingController: PagingController;
 
   constructor(private http: HttpClient, private toaster: Toaster,
@@ -69,7 +70,7 @@ export class BuildHistoryComponent implements OnInit {
     this.fetchList();
   }
 
-  popHistDetails(u: BuildHist) {
+  popHistDetails(u: ApiListBuildHistoryRes) {
     this.nav.navigateToUrl("/build/history/details", [
       { buildNo: u.buildNo },
     ]);

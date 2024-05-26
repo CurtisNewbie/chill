@@ -70,3 +70,7 @@ build:
   - name: "restart_nginx"
     steps:
       - command: "cd ~/services && docker-compose restart nginx"
+  - name: "build_vfm"
+    steps:
+      - script: "vfm.sh"
+    git-repo: "~/git/vfm"

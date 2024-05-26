@@ -3,21 +3,23 @@ import { Component, OnInit } from '@angular/core';
 import { Toaster } from '../toaster.service';
 import { ActivatedRoute } from '@angular/router';
 
-export interface HistCommandLog {
+export interface ApiCmdLogRes {
   id?: number
   command?: string
   remark?: string
   status?: string
 }
 
-export interface BuildHistDetails {
-  id?: number
-  name?: string
-  buildNo?: string
-  status?: string
-  startTime?: number | Date
-  endTime?: number | Date
-  commandLogs?: HistCommandLog[]
+export interface ApiQryBuildHistDetailRes {
+  id?: number                    // build history id
+  name?: string                  // build name
+  buildNo?: string               // build no
+  commitId?: string              // build commit id
+  status?: string                // built status
+  startTime?: number             // build start time
+  endTime?: number               // build end time
+  remark?: string                // remark
+  commandLogs?: ApiCmdLogRes[]
 }
 
 @Component({
@@ -27,7 +29,7 @@ export interface BuildHistDetails {
 })
 export class BuildHistoryDetailsComponent implements OnInit {
 
-  data: BuildHistDetails = {};
+  data: ApiQryBuildHistDetailRes = {};
   buildNo: string;
 
   constructor(private http: HttpClient, private toaster: Toaster, private route: ActivatedRoute) {

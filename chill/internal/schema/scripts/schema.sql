@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS chill.build_log (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'primary key',
     build_no VARCHAR(32) NOT NULL DEFAULT '' COMMENT 'build no',
     name VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'build name',
+    commit_id VARCHAR(45) NOT NULL DEFAULT '' COMMENT 'commit id',
     status VARCHAR(10) NOT NULL DEFAULT '' COMMENT 'status: SUCCESSFUL, FAILED',
     remark VARCHAR(1000) NOT NULL DEFAULT '' COMMENT 'remark',
     build_start_time TIMESTAMP COMMENT 'build start time',

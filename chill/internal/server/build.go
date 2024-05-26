@@ -161,7 +161,7 @@ func ListBuildHistory(rail miso.Rail, req ApiListBuildHistoryReq, db *gorm.DB) (
 			return tx
 		}).
 		WithSelectQuery(func(tx *gorm.DB) *gorm.DB {
-			return tx.Select("id", "name", "build_no", "status", "build_start_time start_time", "build_end_time end_time")
+			return tx.Select("id", "name", "build_no", "status", "build_start_time start_time", "build_end_time end_time", "commit_id")
 		}).
 		Exec(rail, db)
 }
@@ -285,8 +285,8 @@ func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, p UpdateBuildStatusParam) er
 			return fmt.Errorf("failed to update build_info, %w", err)
 		}
 
-		err = tx.Exec(`INSERT INTO build_log (build_no, name, status, remark, build_start_time, build_end_time) VALUES (?,?,?,?,?,?)`,
-			p.BuildNo, p.Name, p.Status, p.Remark, p.StartTime, p.EndTime).Error
+		err = tx.Exec(`INSERT INTO build_log (build_no, name, status, remark, build_start_time, build_end_time, commit_id) VALUES (?,?,?,?,?,?,?)`,
+			p.BuildNo, p.Name, p.Status, p.Remark, p.StartTime, p.EndTime, p.CommitId).Error
 		if err != nil {
 			return fmt.Errorf("failed to save build_log, %w", err)
 		}
@@ -298,7 +298,9 @@ func QryBuildHistDetails(rail miso.Rail, db *gorm.DB, req ApiQryBuildHistDetailR
 
 	var his ApiListBuildHistoryRes
 	err := db.
-		Raw(`SELECT id, name, build_no, status, build_start_time start_time, build_end_time end_time FROM build_log WHERE build_no = ?`, req.BuildNo).
+		Raw(`
+		SELECT id, name, build_no, status, build_start_time start_time, build_end_time end_time, commit_id
+		FROM build_log WHERE build_no = ?`, req.BuildNo).
 		Scan(&his).Error
 	if err != nil {
 		return ApiQryBuildHistDetailRes{}, fmt.Errorf("failed to query build_log, %v, %w", req.BuildNo, err)
