@@ -55,3 +55,7 @@ build:
     steps:
       - script: "doc-indexer.sh"
     git-repo: "~/git/doc-indexer"
+  - name: "build_user-vault"
+    steps:
+      - script: "user-vault.sh"
+    git-repo: "~/git/user-vault"
