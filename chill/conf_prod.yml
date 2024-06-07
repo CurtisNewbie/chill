@@ -51,10 +51,6 @@ build:
   - name: "build_mini-fstore"
     steps:
       - script: "mini-fstore.sh"
-  - name: "build_doc-indexer"
-    steps:
-      - script: "doc-indexer.sh"
-    git-repo: "~/git/doc-indexer"
   - name: "build_user-vault"
     steps:
       - script: "user-vault.sh"
@@ -74,3 +70,8 @@ build:
     steps:
       - script: "vfm.sh"
     git-repo: "~/git/vfm"
+
+  # - name: "build_doc-indexer"
+  #   steps:
+  #     - script: "doc-indexer.sh"
+  #   git-repo: "~/git/doc-indexer"
