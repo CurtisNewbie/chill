@@ -51,6 +51,7 @@ build:
   - name: "build_mini-fstore"
     steps:
       - script: "mini-fstore.sh"
+    git-repo: "~/git/mini-fstore"
   - name: "build_user-vault"
     steps:
       - script: "user-vault.sh"
