@@ -112,7 +112,7 @@ func ListBuildInfos(rail miso.Rail, page miso.Paging, db *gorm.DB) (miso.PageRes
 	return miso.NewPageQuery[ApiListBuildInfoRes]().
 		WithPage(page).
 		WithBaseQuery(func(tx *gorm.DB) *gorm.DB {
-			return tx.Table("build_info").Order("id desc")
+			return tx.Table("build_info").Order("utime desc")
 		}).
 		ForEach(func(t ApiListBuildInfoRes) ApiListBuildInfoRes {
 			b, ok := builds.Find(t.Name)
