@@ -71,6 +71,10 @@ build:
     steps:
       - script: "vfm.sh"
     git-repo: "~/git/vfm"
+  - name: "build_gatekeeper"
+    steps:
+      - script: "gatekeeper.sh"
+    git-repo: "~/git/gatekeeper"
 
   # - name: "build_doc-indexer"
   #   steps:
