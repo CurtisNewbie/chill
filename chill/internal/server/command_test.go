@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/curtisnewbie/miso/miso"
+	"github.com/curtisnewbie/miso/util"
 )
 
 func TestBashRunNormal(t *testing.T) {
@@ -14,7 +15,7 @@ echo "yes" > "abc.txt"`))
 		t.Fatal(err)
 	}
 	defer os.Remove("abc.txt")
-	s, err := miso.ReadFileAll("abc.txt")
+	s, err := util.ReadFileAll("abc.txt")
 	if err != nil {
 		t.Fatal(err)
 	}

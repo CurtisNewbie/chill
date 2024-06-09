@@ -1,6 +1,9 @@
 package server
 
-import "github.com/curtisnewbie/miso/miso"
+import (
+	"github.com/curtisnewbie/miso/miso"
+	"github.com/curtisnewbie/miso/util"
+)
 
 func RegisterEndpoints(rail miso.Rail) {
 	miso.PrepareWebStaticFs(staticFs, staticFsPre)
@@ -24,8 +27,8 @@ type ApiListBuildInfoRes struct {
 	Id          int        `desc:"build info id"`
 	Name        string     `desc:"build name"`
 	Status      string     `desc:"last build status"`
-	Ctime       miso.ETime `desc:"create time"`
-	Utime       miso.ETime `desc:"update time"`
+	Ctime       util.ETime `desc:"create time"`
+	Utime       util.ETime `desc:"update time"`
 	CommitId    string     `desc:"last build commit id"`
 	BuildSteps  []string   `gorm:"-" desc:"build steps"`
 	Triggerable bool       `gorm:"-" desc:"whether the build is triggerable"`
@@ -54,8 +57,8 @@ type ApiListBuildHistoryRes struct {
 	BuildNo   string     `desc:"build no"`
 	CommitId  string     `desc:"build commit id"`
 	Status    string     `desc:"built status"`
-	StartTime miso.ETime `desc:"build start time"`
-	EndTime   miso.ETime `desc:"build end time"`
+	StartTime util.ETime `desc:"build start time"`
+	EndTime   util.ETime `desc:"build end time"`
 }
 
 func ApiListBuildHistory(inb *miso.Inbound, req ApiListBuildHistoryReq) (miso.PageRes[ApiListBuildHistoryRes], error) {
@@ -72,8 +75,8 @@ type ApiQryBuildHistDetailRes struct {
 	BuildNo     string         `desc:"build no"`
 	CommitId    string         `desc:"build commit id"`
 	Status      string         `desc:"built status"`
-	StartTime   miso.ETime     `desc:"build start time"`
-	EndTime     miso.ETime     `desc:"build end time"`
+	StartTime   util.ETime     `desc:"build start time"`
+	EndTime     util.ETime     `desc:"build end time"`
 	Remark      string         `desc:"remark"`
 	CommandLogs []ApiCmdLogRes `desc:"commands execution log"`
 }

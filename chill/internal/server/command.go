@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/curtisnewbie/miso/miso"
+	"github.com/curtisnewbie/miso/util"
 )
 
 func BashRun(rail miso.Rail, script []byte) (string, error) {
@@ -18,9 +19,9 @@ func BashRun(rail miso.Rail, script []byte) (string, error) {
 	if cmdout, err = c.CombinedOutput(); err != nil {
 		var outstr string
 		if cmdout != nil {
-			outstr = strings.TrimSpace(miso.UnsafeByt2Str(cmdout))
+			outstr = strings.TrimSpace(util.UnsafeByt2Str(cmdout))
 		}
 		return outstr, fmt.Errorf("%s, %w", outstr, err)
 	}
-	return strings.TrimSpace(miso.UnsafeByt2Str(cmdout)), nil
+	return strings.TrimSpace(util.UnsafeByt2Str(cmdout)), nil
 }

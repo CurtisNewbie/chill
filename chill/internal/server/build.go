@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/curtisnewbie/miso/miso"
+	"github.com/curtisnewbie/miso/util"
 	"gorm.io/gorm"
 )
 
@@ -24,7 +25,7 @@ var (
 )
 
 var (
-	buildPool      = miso.NewAsyncPool(60, 30)
+	buildPool      = util.NewAsyncPool(60, 30)
 	buildStatusMap = sync.Map{}
 )
 
@@ -76,7 +77,7 @@ func InitBuildStatusMap(bu Builds) {
 }
 
 func CheckBuildsConf(bu Builds) error {
-	names := miso.NewSet[string]()
+	names := util.NewSet[string]()
 	for _, b := range bu.Builds {
 		if b.Name == "" {
 			return miso.NewErrf("build name should be empty")
@@ -104,7 +105,7 @@ func CheckBuildsConf(bu Builds) error {
 
 // Lookup build script under the specified folder.
 func LookupBuildScript(path string) ([]byte, error) {
-	return miso.ReadFileAll(filepath.Join(miso.GetPropStr(PropScriptsBaseFolder), path))
+	return util.ReadFileAll(filepath.Join(miso.GetPropStr(PropScriptsBaseFolder), path))
 }
 
 func ListBuildInfos(rail miso.Rail, page miso.Paging, db *gorm.DB) (miso.PageRes[ApiListBuildInfoRes], error) {
@@ -178,9 +179,9 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 	}
 
 	buildPool.Go(func() {
-		stime := miso.Now()
+		stime := util.Now()
 		rail = rail.NextSpan()
-		buildNo := miso.GenIdP("build_")
+		buildNo := util.GenIdP("build_")
 		if !buildStatusMap.CompareAndSwap(b.Name, false, true) {
 			rail.Infof("Build '%s' is running, ignored", b.Name)
 			return
@@ -241,7 +242,7 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 			Status:    status,
 			Remark:    remark,
 			StartTime: stime,
-			EndTime:   miso.Now(),
+			EndTime:   util.Now(),
 			CommitId:  commitId,
 		}
 		if er := UpdateBuildStatus(rail, db, ubsp); er != nil {
@@ -253,7 +254,7 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 
 func RunBuildCmd(rail miso.Rail, cmd BuildCmd) (string, error) {
 	if cmd.Command != "" {
-		return BashRun(rail, miso.UnsafeStr2Byt(cmd.Command))
+		return BashRun(rail, util.UnsafeStr2Byt(cmd.Command))
 	} else {
 		file, err := LookupBuildScript(cmd.Script)
 		if err != nil {
@@ -274,13 +275,13 @@ type UpdateBuildStatusParam struct {
 	Status    string
 	Remark    string
 	CommitId  string
-	StartTime miso.ETime
-	EndTime   miso.ETime
+	StartTime util.ETime
+	EndTime   util.ETime
 }
 
 func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, p UpdateBuildStatusParam) error {
 	return db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Exec(`UPDATE build_info SET status = ?, utime = ?, commit_id = ? WHERE name = ?`, p.Status, miso.Now(), p.CommitId, p.Name).Error
+		err := tx.Exec(`UPDATE build_info SET status = ?, utime = ?, commit_id = ? WHERE name = ?`, p.Status, util.Now(), p.CommitId, p.Name).Error
 		if err != nil {
 			return fmt.Errorf("failed to update build_info, %w", err)
 		}
