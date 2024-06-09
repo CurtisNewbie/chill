@@ -46,7 +46,6 @@ auth:
     username: "${CHILL_USERNAME}"
     password: "${CHILL_PASSWORD}"
 
-
 build:
   - name: "build_mini-fstore"
     steps:
@@ -75,8 +74,3 @@ build:
     steps:
       - script: "gatekeeper.sh"
     git-repo: "~/git/gatekeeper"
-
-  # - name: "build_doc-indexer"
-  #   steps:
-  #     - script: "doc-indexer.sh"
-  #   git-repo: "~/git/doc-indexer"
