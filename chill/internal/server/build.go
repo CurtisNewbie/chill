@@ -190,29 +190,6 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 		defer buildStatusMap.Store(b.Name, false)
 		defer miso.TimeOp(rail, time.Now(), fmt.Sprintf("build '%s'", b.Name))
 
-		// try to get commit id and the tag currently pointing at
-		var commitId string
-		var tag string
-		if b.GitRepo != "" {
-			commitIdCmd := fmt.Sprintf("cd %s && git rev-parse HEAD", b.GitRepo)
-			cid, err := RunBuildCmd(rail, BuildCmd{Command: commitIdCmd})
-			if err == nil {
-				commitId = cid
-				rail.Infof("Executed %v %#v, commit_id: %s", b.Name, commitIdCmd, commitId)
-			} else {
-				rail.Errorf("Failed to get build commit_id, %v, '%s', %v", b.Name, commitIdCmd, err)
-			}
-
-			tagCmd := fmt.Sprintf("cd %s && git tag --points-at HEAD", b.GitRepo)
-			tagv, err := RunBuildCmd(rail, BuildCmd{Command: tagCmd})
-			if err == nil {
-				tag = tagv
-				rail.Infof("Executed %v %#v, tag: %s", b.Name, tagCmd, tag)
-			} else {
-				rail.Errorf("Failed to get build tag currently pointing at, %v, '%s', %v", b.Name, tagCmd, err)
-			}
-		}
-
 		var remark string
 		var status string = StatusSuccessful
 		for _, s := range b.Steps {
@@ -244,6 +221,29 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 			}
 			if sterr != nil {
 				break
+			}
+		}
+
+		// try to get commit id and the tag currently pointing at
+		var commitId string
+		var tag string
+		if b.GitRepo != "" {
+			commitIdCmd := fmt.Sprintf("cd %s && git rev-parse HEAD", b.GitRepo)
+			cid, err := RunBuildCmd(rail, BuildCmd{Command: commitIdCmd})
+			if err == nil {
+				commitId = cid
+				rail.Infof("Executed %v %#v, commit_id: %s", b.Name, commitIdCmd, commitId)
+			} else {
+				rail.Errorf("Failed to get build commit_id, %v, '%s', %v", b.Name, commitIdCmd, err)
+			}
+
+			tagCmd := fmt.Sprintf("cd %s && git tag --points-at HEAD", b.GitRepo)
+			tagv, err := RunBuildCmd(rail, BuildCmd{Command: tagCmd})
+			if err == nil {
+				tag = tagv
+				rail.Infof("Executed %v %#v, tag: %s", b.Name, tagCmd, tag)
+			} else {
+				rail.Errorf("Failed to get build tag currently pointing at, %v, '%s', %v", b.Name, tagCmd, err)
 			}
 		}
 
