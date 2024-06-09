@@ -11,6 +11,7 @@ export interface ApiListBuildInfoRes {
   ctime?: number                 // create time
   utime?: number                 // update time
   commitId?: string              // last build commit id
+  tag?: string                   // tag
   buildSteps?: string[]          // build steps
   triggerable?: boolean          // whether the build is triggerable
 }

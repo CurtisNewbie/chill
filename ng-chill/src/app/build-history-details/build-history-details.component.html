@@ -23,6 +23,11 @@
     </p>
 
     <p class="m-1">
+        <span class="me-2">Tag:</span>
+        <span> {{data.tag}} </span>
+    </p>
+
+    <p class="m-1">
         <span class="me-2">Status:</span>
         <span *ngIf="data.status == 'SUCCESSFUL'"
             style="border-radius:10px; padding:5px; background-color:rgba(172, 255, 47, 0.761);"> {{data.status}}

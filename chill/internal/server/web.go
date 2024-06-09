@@ -30,6 +30,7 @@ type ApiListBuildInfoRes struct {
 	Ctime       util.ETime `desc:"create time"`
 	Utime       util.ETime `desc:"update time"`
 	CommitId    string     `desc:"last build commit id"`
+	Tag         string     `desc:"tag"`
 	BuildSteps  []string   `gorm:"-" desc:"build steps"`
 	Triggerable bool       `gorm:"-" desc:"whether the build is triggerable"`
 }
@@ -56,6 +57,7 @@ type ApiListBuildHistoryRes struct {
 	Name      string     `desc:"build name"`
 	BuildNo   string     `desc:"build no"`
 	CommitId  string     `desc:"build commit id"`
+	Tag       string     `desc:"tag"`
 	Status    string     `desc:"built status"`
 	StartTime util.ETime `desc:"build start time"`
 	EndTime   util.ETime `desc:"build end time"`
@@ -74,6 +76,7 @@ type ApiQryBuildHistDetailRes struct {
 	Name        string         `desc:"build name"`
 	BuildNo     string         `desc:"build no"`
 	CommitId    string         `desc:"build commit id"`
+	Tag         string         `desc:"tag"`
 	Status      string         `desc:"built status"`
 	StartTime   util.ETime     `desc:"build start time"`
 	EndTime     util.ETime     `desc:"build end time"`

@@ -162,7 +162,7 @@ func ListBuildHistory(rail miso.Rail, req ApiListBuildHistoryReq, db *gorm.DB) (
 			return tx
 		}).
 		WithSelectQuery(func(tx *gorm.DB) *gorm.DB {
-			return tx.Select("id", "name", "build_no", "status", "build_start_time start_time", "build_end_time end_time", "commit_id")
+			return tx.Select("id", "name", "build_no", "status", "build_start_time start_time", "build_end_time end_time", "commit_id", "tag")
 		}).
 		Exec(rail, db)
 }
@@ -190,8 +190,9 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 		defer buildStatusMap.Store(b.Name, false)
 		defer miso.TimeOp(rail, time.Now(), fmt.Sprintf("build '%s'", b.Name))
 
-		// get commit id
+		// try to get commit id and the tag currently pointing at
 		var commitId string
+		var tag string
 		if b.GitRepo != "" {
 			commitIdCmd := fmt.Sprintf("cd %s && git rev-parse HEAD", b.GitRepo)
 			cid, err := RunBuildCmd(rail, BuildCmd{Command: commitIdCmd})
@@ -200,6 +201,15 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 				rail.Infof("Executed %v %#v, commit_id: %s", b.Name, commitIdCmd, commitId)
 			} else {
 				rail.Errorf("Failed to get build commit_id, %v, '%s', %v", b.Name, commitIdCmd, err)
+			}
+
+			tagCmd := fmt.Sprintf("cd %s && git tag --points-at HEAD", b.GitRepo)
+			tagv, err := RunBuildCmd(rail, BuildCmd{Command: tagCmd})
+			if err == nil {
+				tag = tagv
+				rail.Infof("Executed %v %#v, tag: %s", b.Name, tagCmd, tag)
+			} else {
+				rail.Errorf("Failed to get build tag currently pointing at, %v, '%s', %v", b.Name, tagCmd, err)
 			}
 		}
 
@@ -244,6 +254,7 @@ func TriggerBuild(rail miso.Rail, req ApiTriggerBuildReq, db *gorm.DB) error {
 			StartTime: stime,
 			EndTime:   util.Now(),
 			CommitId:  commitId,
+			Tag:       tag,
 		}
 		if er := UpdateBuildStatus(rail, db, ubsp); er != nil {
 			rail.Errorf("Failed to save build log, build: %s, %#v, %v", b.Name, ubsp, er)
@@ -275,19 +286,21 @@ type UpdateBuildStatusParam struct {
 	Status    string
 	Remark    string
 	CommitId  string
+	Tag       string
 	StartTime util.ETime
 	EndTime   util.ETime
 }
 
 func UpdateBuildStatus(rail miso.Rail, db *gorm.DB, p UpdateBuildStatusParam) error {
 	return db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Exec(`UPDATE build_info SET status = ?, utime = ?, commit_id = ? WHERE name = ?`, p.Status, util.Now(), p.CommitId, p.Name).Error
+		err := tx.Exec(`UPDATE build_info SET status = ?, utime = ?, commit_id = ?, tag = ? WHERE name = ?`, p.Status, util.Now(),
+			p.CommitId, p.Tag, p.Name).Error
 		if err != nil {
 			return fmt.Errorf("failed to update build_info, %w", err)
 		}
 
-		err = tx.Exec(`INSERT INTO build_log (build_no, name, status, remark, build_start_time, build_end_time, commit_id) VALUES (?,?,?,?,?,?,?)`,
-			p.BuildNo, p.Name, p.Status, p.Remark, p.StartTime, p.EndTime, p.CommitId).Error
+		err = tx.Exec(`INSERT INTO build_log (build_no, name, status, remark, build_start_time, build_end_time, commit_id, tag) VALUES (?,?,?,?,?,?,?,?)`,
+			p.BuildNo, p.Name, p.Status, p.Remark, p.StartTime, p.EndTime, p.CommitId, p.Tag).Error
 		if err != nil {
 			return fmt.Errorf("failed to save build_log, %w", err)
 		}
@@ -300,7 +313,7 @@ func QryBuildHistDetails(rail miso.Rail, db *gorm.DB, req ApiQryBuildHistDetailR
 	var his ApiListBuildHistoryRes
 	err := db.
 		Raw(`
-		SELECT id, name, build_no, status, build_start_time start_time, build_end_time end_time, commit_id
+		SELECT id, name, build_no, status, build_start_time start_time, build_end_time end_time, commit_id, tag
 		FROM build_log WHERE build_no = ?`, req.BuildNo).
 		Scan(&his).Error
 	if err != nil {
@@ -323,6 +336,7 @@ func QryBuildHistDetails(rail miso.Rail, db *gorm.DB, req ApiQryBuildHistDetailR
 		Status:      his.Status,
 		StartTime:   his.StartTime,
 		EndTime:     his.EndTime,
+		Tag:         his.Tag,
 		CommandLogs: cl,
 	}, nil
 }

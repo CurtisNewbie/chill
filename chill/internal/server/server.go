@@ -10,7 +10,7 @@ import (
 
 func BootstrapServer() {
 	// automatic MySQL schema migration using svc
-	schema.EnableSchemaMigrateOnProd()
+	schema.EnableSchemaMigrate()
 
 	miso.PreServerBootstrap(PreServerBootstrap)
 	miso.PostServerBootstrapped(PostServerBootstrap)

@@ -15,6 +15,7 @@ export interface ApiQryBuildHistDetailRes {
   name?: string                  // build name
   buildNo?: string               // build no
   commitId?: string              // build commit id
+  tag?: string                   // tag
   status?: string                // built status
   startTime?: number             // build start time
   endTime?: number               // build end time
